@@ -402,3 +402,118 @@ ggplot(df, aes(x = decile, y = coefficient, color = Variable, lty = Variable, sh
 
 ggsave(filename = here::here("output", "Figure-9.png"), device = "png", width = 290, height = 231, units = "mm", dpi = 300)
 ```
+
+
+### Figure 12
+
+```{r}
+df <- read_rds(here::here("data", "figure-12.rds"))
+
+df %>% 
+    ggplot(aes(x = value, y = treatment, colour = treatment)) +
+    geom_point(alpha = .7) +
+    facet_wrap(~period) +
+    scale_colour_brewer(palette = "Dark2") +
+    theme(legend.position = "none") +
+    labs(x = "Propensity Score", y = NULL
+    ) 
+
+ggsave(filename = here::here("output", "Figure-12.png"), device = "png", width = 290, height = 231, units = "mm", dpi = 300)
+
+```
+
+### Figure 13
+
+```{r}
+df <- read_rds(here::here("data", "figure-13.rds"))
+
+ggplot(df, aes(x = age, y = estimate)) +
+    geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) +
+    geom_point(colour = "#1A9973", cex = 2) +
+    geom_hline(yintercept = 0, lty = 2) +
+    theme_minimal() +
+    scale_x_continuous(breaks = c(15, 30, 45, 60)) +
+    labs(x = "Age", y = "Marginal effect of age on Western Line parish coefficient") +
+    theme(
+        # panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        plot.title = element_markdown(size = 32, family = "roboto"),
+        plot.title.position = "plot",
+        legend.position = "none",
+        text = element_text(family = "ibm", size = 18)
+    )
+
+ggsave(filename = here::here("output", "Figure-13.png"), device = "png", width = 290, height = 231, units = "mm", dpi = 300)
+```
+
+
+
+
+### Figure 14
+
+```{r}
+df <- read_rds(here::here("data", "figure-14.rds"))
+
+ggplot(df, aes(x = decile, y = coefficient, color = Variable, lty = Variable, shape = Variable)) +
+    geom_line() +
+    geom_point(cex = 2, alpha = .8) +
+    geom_errorbar(aes(ymin = coefficient - se, ymax = coefficient + se), width = 0.2) +
+    facet_grid(year ~ .) +
+    theme_light() +
+    scale_colour_brewer(palette = "Dark2") +
+    geom_hline(yintercept = 0, lty = 2) +
+    scale_x_continuous(labels = scales::percent_format(scale = 1), breaks = seq(10, 90, 10)) +
+    theme(legend.position = "bottom") +
+    labs(
+        x = "Percentile of the income distribution",
+        y = "Magnitude of regression coefficient",
+        # title = "Coefficients from quantile regression",
+        # subtitle = "Log income is outcome variable.\nControls include, age, gender, schooling, HISCLASS, marital status. \nErrors clustered at parish level. \nError bars show 95% CI"
+    ) +
+    theme(
+        # panel.grid.major.y = element_blank(),
+        plot.title = element_markdown(size = 32, family = "roboto"),
+        plot.title.position = "plot",
+        legend.position = "bottom",
+        text = element_text(family = "ibm", size = 18)
+    )
+
+ggsave(filename = here::here("output", "Figure-14.png"), device = "png", width = 290, height = 231, units = "mm", dpi = 300)
+```
+
+
+### Figure 15
+
+```{r}
+df <- read_rds(here::here("data", "figure-15.rds"))
+
+df %>%
+    mutate(estimator = fct_relevel(estimator, "Residualized QR", "Conditional QR")) %>%
+    ggplot(aes(decile, coefficient, colour = estimator, lty = estimator, shape = estimator)) +
+    geom_hline(yintercept = 0, lty = 2) +
+    geom_errorbar(aes(ymin = lower, ymax = upper), width = 2) +
+    geom_line() +
+    geom_point(cex = 3) +
+    scale_colour_brewer(palette = "Dark2") +
+    scale_x_continuous(labels = scales::percent_format(scale = 1), breaks = seq(10, 90, 10)) +
+    scale_linetype_manual(values = c("Conditional QR" = "solid", "Residualized QR" = "dashed")) +
+    theme(legend.position = "bottom") +
+    labs(
+        x = "Percentile of the income distribution",
+        y = "Magnitude of regression coefficient",
+        colour = "Estimator",
+        shape = "Estimator",
+        lty = "Estimator",
+    ) +
+    theme(
+        # panel.grid.major.y = element_blank(),
+        plot.title = element_markdown(size = 32, family = "roboto"),
+        plot.title.position = "plot",
+        legend.position = "bottom",
+        text = element_text(family = "ibm", size = 18)
+    )
+
+ggsave(filename = here::here("output", "Figure-15.png"), device = "png", width = 290, height = 231, units = "mm", dpi = 300)
+
+```

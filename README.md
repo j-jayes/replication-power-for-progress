@@ -128,6 +128,40 @@ Datafile: `data/raw/WV6_Data_Stata_v20180912.dta` (not provided)
 | `data/raw/terra.dta`                | IPUMS Terra | As per terms of use                                                          | Yes      |
 | `data/derived/regression_input.dta` | All listed  | Combines multiple data sources, serves as input for Table 2, 3 and Figure 5. | Yes      |
 
+## Variable list
+
+### The 1930 Swedish Cens
+
+| Name                            | Description                                                                                   | Origin of the Variable                        | Script |
+| ------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------- | ------ |
+| id                              | Unique identifier for each individual                                                         | 1930 Census                                   |        |
+| log_income                      | Log transformation of income                                                                  | 1930 Census                                   |        |
+| employed                        | Binary variable indicating whether an individual is employed                                  | 1930 Census                                   |        |
+| occ_title_without_income        | Identifies individuals with an occupation but no listed income                                | 1930 Census                                   |        |
+| electricity_job_direct          | Job directly related to electricity, e.g., electricians, linemen                              | Hand-coded from occupational titles           |        |
+| electricity_job_indirect        | Jobs indirectly affected by electricity, e.g., manufacturing workers using electric machinery | Hand-coded from occupational titles           |        |
+| union_density_1890              | Union density in the parish in 1890                                                           | Historical data sources on union activity     |        |
+| union_density_1900              | Union density in the parish in 1900                                                           | Historical data sources on union activity     |        |
+| union_density_1910              | Union density in the parish in 1910                                                           | Historical data sources on union activity     |        |
+| union_density_1930              | Union density in the parish in 1930                                                           | Historical data sources on union activity     |        |
+| age                             | Age of individuals at the time of the 1930 census                                             | 1930 Census                                   |        |
+| age_2                           | Squared age variable for non-linear effects in regression                                     | Derived from the age variable                 |        |
+| female                          | Indicator for gender (1 = female)                                                             | 1930 Census                                   |        |
+| western_line_parish             | Indicates whether the parish is along the Western Line of electricity                         | Geographic location of parishes               |        |
+| western_line_parish_dweller     | Indicates whether individuals live in a Western Line parish                                   | Geographic location of parishes               |        |
+| birth_parish_distance_to_line   | Distance of birth parish from the Western Line of electricity                                 | Geographic location of birth parishes         |        |
+| current_parish_distance_to_line | Distance of current parish from the Western Line of electricity                               | Geographic location of current parishes       |        |
+| birth_parish_touching_treated   | Indicator if birth parish is treated (close to Western Line)                                  | Treatment variable based on proximity         |        |
+| current_parish_touching_treated | Indicator if current parish is treated (close to Western Line)                                | Treatment variable based on proximity         |        |
+| birth_parish_ref_code           | Reference code for the birth parish                                                           | 1930 Census                                   |        |
+| birth_parish_parish             | Name of the birth parish                                                                      | 1930 Census                                   |        |
+| current_parish_ref_code         | Reference code for the current parish                                                         | 1930 Census                                   |        |
+| current_parish_parish           | Name of the current parish                                                                    | 1930 Census                                   |        |
+| dist_bp_to_cp_km                | Distance between birth parish and current parish measured in kilometers                       | Calculated from geographic data               |        |
+| schooling                       | Highest level of schooling achieved                                                           | Derived from the schooling variable, grouped  |        |
+| marital                         | Marital status of individuals                                                                 | 1930 Census                                   |        |
+| hisclass                        | Coded HISCLASS social class based on occupation                                               | Coded from occupational data (HISCO/HISCLASS) |        |
+
 ## Computational requirements
 
 > INSTRUCTIONS: In general, the specific computer code used to generate the results in the article will be within the repository that also contains this README. However, other computational requirements - shared libraries or code packages, required software, specific computing hardware - may be important, and is always useful, for the goal of replication. Some example text follows.
@@ -278,15 +312,3 @@ The provided code reproduces:
 > INSTRUCTIONS: As in any scientific manuscript, you should have proper references. For instance, in this sample README, we cited "Ruggles et al, 2019" and "DESE, 2019" in a Data Availability Statement. The reference should thus be listed here, in the style of your journal:
 
 Steven Ruggles, Steven M. Manson, Tracy A. Kugler, David A. Haynes II, David C. Van Riper, and Maryia Bakhtsiyarava. 2018. "IPUMS Terra: Integrated Data on Population and Environment: Version 2 [dataset]." Minneapolis, MN: *Minnesota Population Center, IPUMS*. https://doi.org/10.18128/D090.V2
-
-Department of Elementary and Secondary Education (DESE), 2019. "Student outcomes database [dataset]" *Massachusetts Department of Elementary and Secondary Education (DESE)*. Accessed January 15, 2019.
-
-U.S. Bureau of Economic Analysis (BEA). 2016. “Table 30: "Economic Profile by County, 1969-2016.” (accessed Sept 1, 2017).
-
-Inglehart, R., C. Haerpfer, A. Moreno, C. Welzel, K. Kizilova, J. Diez-Medrano, M. Lagos, P. Norris, E. Ponarin & B. Puranen et al. (eds.). 2014. World Values Survey: Round Six - Country-Pooled Datafile Version: http://www.worldvaluessurvey.org/WVSDocumentationWV6.jsp. Madrid: JD Systems Institute.
-
----
-
-## Acknowledgements
-
-Some content on this page was copied from [Hindawi](https://www.hindawi.com/research.data/#statement.templates). Other content was adapted  from [Fort (2016)](https://doi.org/10.1093/restud/rdw057), Supplementary data, with the author's permission.

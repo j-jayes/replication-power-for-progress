@@ -12,6 +12,7 @@ format: html
 library(tidyverse)
 library(showtext)
 library(ggtext)
+library(sf)
 
 # Set params
 theme_set(theme_light())
@@ -403,6 +404,64 @@ ggplot(df, aes(x = decile, y = coefficient, color = Variable, lty = Variable, sh
 ggsave(filename = here::here("output", "Figure-9.png"), device = "png", width = 290, height = 231, units = "mm", dpi = 300)
 ```
 
+### Figure 11
+
+```{r}
+
+df <- read_rds(here::here("data", "figure-11.rds"))
+
+plot_figure_11 <- function(year) {
+    
+    ggplot() +
+        geom_sf(data = df$counties, colour = "grey70", fill = "#edf8fb") +
+        # Power plants
+        geom_point(aes(geometry = geometry, colour = "Hydropower plants"),
+                             stat = StatSfCoordinates,
+                             fun.geometry = sf::st_centroid,
+                             size = 10, shape = 18, alpha = .9,
+                             data = df$hydro
+        ) +
+        geom_sf_text(aes(label = name), data = df$hydro, size = 8, nudge_y = .35) +
+        # Lines
+        geom_sf(aes(colour = glue::glue(("Electricity lines\n{ year }"), geometry = geometry)),
+                        data = df$map_grid %>%
+                            filter(year == !!year), linewidth = 1.5, alpha = .5, show.legend = "line"
+        ) +
+        # Fills
+        scale_fill_manual(values = c("Western Line parishes" = "#9C6114"), guide = guide_legend(override.aes = list(linetype = "blank", shape = NA))) +
+        scale_color_manual(
+            values = c(glue::glue("Electricity lines\n{year}") = "#000080", "Hydropower plants" = "#d7301f"),
+            guide = guide_legend(override.aes = list(
+                linetype = c("solid", "blank"),
+                shape = c(NA, 18)
+            ))) +
+        coord_sf(
+            xlim = c(NA, 23),
+            ylim = c(55.6, 65)
+        ) +
+        theme_void() +
+        labs(
+            x = NULL,
+            y = NULL,
+            fill = NULL,
+            colour = NULL
+        ) +
+        theme(
+            axis.text = element_blank(),
+            panel.background = element_rect(fill = "#DCE9ED"),
+            panel.grid = element_blank(),
+            legend.position = c(0.77, 0.11),
+            text = element_text(family = "ibm", size = 15)
+        )
+    
+}
+
+# Example usage:
+plot_figure_11(1911)
+
+ggsave(here::here("output", "Figure-11_1911.png"), device = "png", width = 290, height = 231, units = "mm", dpi = 300)
+
+```
 
 ### Figure 12
 
@@ -446,9 +505,6 @@ ggplot(df, aes(x = age, y = estimate)) +
 
 ggsave(filename = here::here("output", "Figure-13.png"), device = "png", width = 290, height = 231, units = "mm", dpi = 300)
 ```
-
-
-
 
 ### Figure 14
 

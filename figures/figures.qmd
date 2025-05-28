@@ -5,7 +5,24 @@ format: html
 
 ### Setup
 
+To replicate this analysis, you will need to install the following R packages:
 
+- `tidyverse` for data manipulation and visualization.
+- `showtext` to enable custom fonts in plots.
+- `ggtext` for enhanced text rendering in ggplot2.
+- `sf` for handling and visualizing spatial data.
+- `here` to simplify file paths.
+- `gghighlight` to highlight data in plots.
+- `magick` for combining and manipulating images.
+- `glue` for string interpolation in plot labels.
+
+You can install these packages with the following command:
+
+```r
+install.packages(c("tidyverse", "showtext", "ggtext", "sf", "here", "gghighlight", "magick", "glue"))
+```
+
+To reproduce the figures in the same style, ensure that Google fonts are accessible, as this script uses `IBM Plex Mono` and `Roboto`. You may need an active internet connection to download these fonts during the initial run.
 
 ```{r}
 # Load packages

@@ -1,7 +1,6 @@
 * Table 1
 
-clear all
-set more off 
+clear
 
 use "data/table-3.dta"
 

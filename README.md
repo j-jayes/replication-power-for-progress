@@ -130,43 +130,109 @@ Datafile: `data/raw/WV6_Data_Stata_v20180912.dta` (not provided)
 
 ## Variable list
 
-### The 1930 Swedish Cens
+### The 1930 Swedish Census
 
-| Name                            | Description                                                                                   | Origin of the Variable                        | Script |
-| ------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------- | ------ |
-| id                              | Unique identifier for each individual                                                         | 1930 Census                                   |        |
-| log_income                      | Log transformation of income                                                                  | 1930 Census                                   |        |
-| employed                        | Binary variable indicating whether an individual is employed                                  | 1930 Census                                   |        |
-| occ_title_without_income        | Identifies individuals with an occupation but no listed income                                | 1930 Census                                   |        |
-| electricity_job_direct          | Job directly related to electricity, e.g., electricians, linemen                              | Hand-coded from occupational titles           |        |
-| electricity_job_indirect        | Jobs indirectly affected by electricity, e.g., manufacturing workers using electric machinery | Hand-coded from occupational titles           |        |
-| union_density_1890              | Union density in the parish in 1890                                                           | Historical data sources on union activity     |        |
-| union_density_1900              | Union density in the parish in 1900                                                           | Historical data sources on union activity     |        |
-| union_density_1910              | Union density in the parish in 1910                                                           | Historical data sources on union activity     |        |
-| union_density_1930              | Union density in the parish in 1930                                                           | Historical data sources on union activity     |        |
-| age                             | Age of individuals at the time of the 1930 census                                             | 1930 Census                                   |        |
-| age_2                           | Squared age variable for non-linear effects in regression                                     | Derived from the age variable                 |        |
-| female                          | Indicator for gender (1 = female)                                                             | 1930 Census                                   |        |
-| western_line_parish             | Indicates whether the parish is along the Western Line of electricity                         | Geographic location of parishes               |        |
-| western_line_parish_dweller     | Indicates whether individuals live in a Western Line parish                                   | Geographic location of parishes               |        |
-| birth_parish_distance_to_line   | Distance of birth parish from the Western Line of electricity                                 | Geographic location of birth parishes         |        |
-| current_parish_distance_to_line | Distance of current parish from the Western Line of electricity                               | Geographic location of current parishes       |        |
-| birth_parish_touching_treated   | Indicator if birth parish is treated (close to Western Line)                                  | Treatment variable based on proximity         |        |
-| current_parish_touching_treated | Indicator if current parish is treated (close to Western Line)                                | Treatment variable based on proximity         |        |
-| birth_parish_ref_code           | Reference code for the birth parish                                                           | 1930 Census                                   |        |
-| birth_parish_parish             | Name of the birth parish                                                                      | 1930 Census                                   |        |
-| current_parish_ref_code         | Reference code for the current parish                                                         | 1930 Census                                   |        |
-| current_parish_parish           | Name of the current parish                                                                    | 1930 Census                                   |        |
-| dist_bp_to_cp_km                | Distance between birth parish and current parish measured in kilometers                       | Calculated from geographic data               |        |
-| schooling                       | Highest level of schooling achieved                                                           | Derived from the schooling variable, grouped  |        |
-| marital                         | Marital status of individuals                                                                 | 1930 Census                                   |        |
-| hisclass                        | Coded HISCLASS social class based on occupation                                               | Coded from occupational data (HISCO/HISCLASS) |        |
+| Name                            | Description                                                                                   | Origin of the Variable                                       | Script                          |
+| ------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------- |
+| id                              | Unique identifier for each individual                                                         | 1930 Census                                                  |                                 |
+| log_income                      | Log transformation of income                                                                  | 1930 Census                                                  |                                 |
+| employed                        | Binary variable indicating whether an individual is employed                                  | 1930 Census                                                  |                                 |
+| occ_title_without_income        | Identifies individuals with an occupation but no listed income                                | 1930 Census                                                  |                                 |
+| electricity_job_direct          | Job directly related to electricity, e.g., electricians, linemen                              | Hand-coded from occupational titles                          | processing/01-swedish-census.py |
+| electricity_job_indirect        | Jobs indirectly affected by electricity, e.g., manufacturing workers using electric machinery | Hand-coded from occupational titles                          | processing/01-swedish-census.py |
+| union_density_1890              | Union density in the parish in 1890                                                           | Joined historical data on union activity at the parish level |                                 |
+| union_density_1900              | Union density in the parish in 1900                                                           | Joined historical data on union activity at the parish level |                                 |
+| union_density_1910              | Union density in the parish in 1910                                                           | Joined historical data on union activity at the parish level |                                 |
+| union_density_1930              | Union density in the parish in 1930                                                           | Joined historical data on union activity at the parish level |                                 |
+| age                             | Age of individuals at the time of the 1930 census                                             | 1930 Census                                                  |                                 |
+| age_2                           | Squared age variable for non-linear effects in regression                                     | Derived from the age variable                                |                                 |
+| female                          | Indicator for gender (1 = female)                                                             | 1930 Census                                                  |                                 |
+| western_line_parish             | Indicates whether the parish is along the Western Line of electricity                         | Geographic location of parishes                              |                                 |
+| western_line_parish_dweller     | Indicates whether individuals live in a Western Line parish                                   | Geographic location of parishes                              |                                 |
+| birth_parish_distance_to_line   | Distance of birth parish from the Western Line of electricity                                 | Geographic location of birth parishes                        |                                 |
+| current_parish_distance_to_line | Distance of current parish from the Western Line of electricity                               | Geographic location of current parishes                      |                                 |
+| birth_parish_touching_treated   | Indicator if birth parish is treated (close to Western Line)                                  | Treatment variable based on proximity                        |                                 |
+| current_parish_touching_treated | Indicator if current parish is treated (close to Western Line)                                | Treatment variable based on proximity                        |                                 |
+| birth_parish_ref_code           | Reference code for the birth parish                                                           | 1930 Census                                                  |                                 |
+| birth_parish_parish             | Name of the birth parish                                                                      | 1930 Census                                                  |                                 |
+| current_parish_ref_code         | Reference code for the current parish                                                         | 1930 Census                                                  |                                 |
+| current_parish_parish           | Name of the current parish                                                                    | 1930 Census                                                  |                                 |
+| dist_bp_to_cp_km                | Distance between birth parish and current parish measured in kilometers                       | Calculated from geographic data                              |                                 |
+| schooling                       | Highest level of schooling achieved                                                           | Derived from the schooling variable, grouped                 |                                 |
+| marital                         | Marital status of individuals                                                                 | 1930 Census                                                  |                                 |
+| hisclass                        | Coded HISCLASS social class based on occupation                                               | Coded from occupational data in previous Swedish Censuses    |                                 |
+
+### Power stations and transformers in 1926 at the Parish level
+
+| Name                            | Label                                   | Description                                                        | Origin of the Variable                                | Script | Source          |
+| ------------------------------- | --------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------- | ------ | --------------- |
+| area                            | Parish area in square kilometers        | Area of the parish measured in square kilometers                   | Geographic data                                       |        | Junkka (2015))  |
+| western_line_parish             | Western Line Parish                     | Indicates if the parish is along the Western Line                  | Geographic location of parishes                       |        |                 |
+| population_1900                 | Parish population in 1900               | Number of inhabitants in the parish in 1900                        | 1900 Census                                           |        | Ruggles (2018)) |
+| distance_to_line                | distance_to_line                        | Distance from the parish to the Western Line in kilometers         | Geographic data                                       |        |                 |
+| latitude                        | Latitude                                | Latitude coordinate of the parish                                  | Geographic data                                       |        |                 |
+| longitude                       | Longitude                               | Longitude coordinate of the parish                                 | Geographic data                                       |        |                 |
+| log_total_power                 | Log Total Power Capacity               | Log-transformed total power installed in the parish                | Digitized data from Electrification Committee Reports |        |                 |
+| log_total_power_transmitted     | Log Total Power Capacity Transmitted    | Log-transformed total power transmission capacity to the parish   | Digitized data from Electrification Committee Reports |        |                 |
+| log_total_power_generated       | Log Total Power Capacity Generated      | Log-transformed total power generation capacity within the parish | Digitized data from Electrification Committee Reports |        |                 |
+| log_total_connections           | Log Total Power Connections             | Log-transformed number of connections installed in the parish      | Digitized data from Electrification Committee Reports |        |                 |
+| log_num_connections_transmitted | Log Total Power Connections Transmitted | Log-transformed number of transformers in the parish               | Digitized data from Electrification Committee Reports |        |                 |
+| log_num_connections_generated   | Log Total Power Connections Generated   | Log-transformed number of generators in the parish                | Digitized data from Electrification Committee Reports |        |                 |
 
 ## Computational requirements
 
-> INSTRUCTIONS: In general, the specific computer code used to generate the results in the article will be within the repository that also contains this README. However, other computational requirements - shared libraries or code packages, required software, specific computing hardware - may be important, and is always useful, for the goal of replication. Some example text follows.
+### Replication of figures
 
-> INSTRUCTIONS: We strongly suggest providing setup scripts that install/set up the environment. Sample scripts for [Stata](https://github.com/gslab-econ/template/blob/master/config/config_stata.do),  [R](https://github.com/labordynamicsinstitute/paper-template/blob/master/programs/global-libraries.R), [Julia](https://github.com/labordynamicsinstitute/paper-template/blob/master/programs/packages.jl) are easy to set up and implement. Specific software may have more sophisticated tools: [Python](https://pip.pypa.io/en/stable/user_guide/#ensuring-repeatability), [Julia](https://julia.quantecon.org/more_julia/tools_editors.html#Package-Environments).
+The figures are produced using R and the `ggplot2` package. The code is written in R and requires the following packages:
+
+- `tidyverse` for data manipulation and visualization.
+- `showtext` to enable custom fonts in plots.
+- `ggtext` for enhanced text rendering in ggplot2.
+- `sf` for handling and visualizing spatial data.
+- `here` to simplify file paths.
+- `gghighlight` to highlight data in plots.
+- `magick` for combining and manipulating images.
+- `glue` for string interpolation in plot labels.
+
+To install these in the same versions as used in the original analysis, run the following code:
+
+```r
+
+# Setting the date for CRAN package versions (Posit Package Manager)
+ppm.date <- "2024-01-01"
+options(repos = paste0("https://packagemanager.posit.co/cran/", ppm.date, "/"))
+
+# Function to check and install missing packages
+pkgTest <- function(x, y = "") {
+  if (!require(x, character.only = TRUE)) {
+    if (y == "") {
+      install.packages(x, dep = TRUE)
+    } else {
+      remotes::install_version(x, y)
+    }
+    if (!require(x, character.only = TRUE)) stop("Package not found")
+  }
+  return("OK")
+}
+
+# Global libraries required for this replication package
+global.libraries <- c(
+  "tidyverse",   # Data manipulation and visualization
+  "showtext",    # Custom fonts for plots
+  "ggtext",      # Enhanced text rendering in ggplot2
+  "sf",          # Spatial data handling and visualization
+  "here",        # File path management
+  "gghighlight", # Highlighting data in ggplot2
+  "magick",      # Image manipulation
+  "glue"         # String interpolation
+)
+
+# Install and load necessary libraries
+results <- sapply(as.list(global.libraries), pkgTest)
+
+# Print results of package loading
+print(results)
+```
 
 ### Software Requirements
 
@@ -312,3 +378,5 @@ The provided code reproduces:
 > INSTRUCTIONS: As in any scientific manuscript, you should have proper references. For instance, in this sample README, we cited "Ruggles et al, 2019" and "DESE, 2019" in a Data Availability Statement. The reference should thus be listed here, in the style of your journal:
 
 Steven Ruggles, Steven M. Manson, Tracy A. Kugler, David A. Haynes II, David C. Van Riper, and Maryia Bakhtsiyarava. 2018. "IPUMS Terra: Integrated Data on Population and Environment: Version 2 [dataset]." Minneapolis, MN: *Minnesota Population Center, IPUMS*. https://doi.org/10.18128/D090.V2
+
+Junkka, Johan. (2015) 2024. ‘Swedish Historical Administrative Maps’. R. [https://github.com/junkka/histmaps](https://github.com/junkka/histmaps).

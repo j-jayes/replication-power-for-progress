@@ -1,0 +1,91 @@
+---
+title: "Replication for appendix tables in the Paper Power and Progress"
+format: html
+---
+
+### Setup
+
+```{r}
+# Load libraries
+library(tidyverse)
+library(haven)
+library(broom)
+library(here)
+library(gt)
+```
+
+### Table 16: Share of parishes with union membership data, 1880-1930
+
+```{r}
+df <- read_rds(here::here("data", "table-16.rds"))
+
+# Create a set of parishes where the data is complete
+n_non_nan <- df %>%
+    filter(distance_to_line <= 300) %>%
+    summarise(across(starts_with("union_density"), ~ sum(!is.na(.)))) %>%
+    mutate(type = "non_nan")
+
+# Create a set of parishes where the data is missing
+n_nan <- df %>%
+    filter(distance_to_line <= 300) %>%
+    summarise(across(starts_with("union_density"), ~ sum(is.na(.)))) %>%
+    mutate(type = "nan")
+
+# Join the two sets
+n_share_complete <- n_non_nan %>% bind_rows(n_nan)
+
+# Create a table
+table_16 <- n_share_complete %>%
+    pivot_longer(cols = -type) %>%
+    mutate(name = parse_number(name)) %>%
+    pivot_wider(names_from = type, values_from = value) %>%
+    mutate(share_complete = non_nan / (non_nan + nan)) %>%
+    mutate(total = non_nan + nan) %>%
+    rename(
+        year = name,
+        union_membership_data_present = non_nan,
+        union_membership_data_missing = nan
+    )
+
+# Display the table
+table_16 %>%
+    gt() %>%
+    cols_label(year = "Year", union_membership_data_present = "Data Present", union_membership_data_missing = "Data Missing", share_complete = "Share Complete", total = "Total number of Parishes") %>%
+    fmt_number(columns = c(union_membership_data_present, union_membership_data_missing, total), decimals = 0) %>%
+    fmt_percent(columns = share_complete, decimals = 2) %>%
+    tab_header(
+        title = md("**Share of Parishes with Union Membership Data**"),
+        subtitle = "In subset of parishes used in regression sample"
+    ) %>%
+    gtsave(here::here("output", "table-16.png"))
+
+```
+
+
+### Table 17: Union Density by Parish Type
+
+
+```{r}
+table_17 <- df %>%
+    filter(distance_to_line < 300) %>%
+    group_by(western_line_parish) %>%
+    summarise(across(starts_with("union_density"), mean, na.rm = T)) %>%
+    pivot_longer(cols = -western_line_parish, names_to = "year", values_to = "union_density") %>%
+    mutate(year = parse_number(year)) %>%
+    mutate(western_line_parish = case_when(
+        western_line_parish == 1 ~ "Western Line Parish",
+        TRUE ~ "Control"
+    ))
+
+table_17 %>%
+    pivot_wider(names_from = western_line_parish, values_from = union_density) %>%
+    gt() %>%
+    fmt_percent(columns = c(Control, "Western Line Parish"), decimals = 2) %>%
+    sub_missing(columns = c(Control, "Western Line Parish"), missing_text = "-") %>%
+    cols_label(year = "Year") %>%
+    tab_header(
+        title = md("**Union Density by Parish Status**"),
+        subtitle = "In subset of parishes used in regression sample"
+    )
+
+```

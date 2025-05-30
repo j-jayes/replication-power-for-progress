@@ -1,0 +1,20 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{6}{c}}
+\hline\hline
+                    &\multicolumn{2}{c}{OLS}                    &\multicolumn{2}{c}{First Stage}            &\multicolumn{2}{c}{2SLS}                   \\\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}&\multicolumn{1}{c}{(6)}\\
+                    &\multicolumn{1}{c}{Log Income}&\multicolumn{1}{c}{Log Income}&\multicolumn{1}{c}{Current Parish (Treated)}&\multicolumn{1}{c}{Current Parish (Treated)}&\multicolumn{1}{c}{Log Income}&\multicolumn{1}{c}{Log Income}\\
+\hline
+Current parish (Western Line)&      0.2256\sym{*}  &      0.1977\sym{***}&                     &                     &      0.7659\sym{***}&      0.5006\sym{***}\\
+                    &     (0.088)         &     (0.056)         &                     &                     &     (0.224)         &     (0.120)         \\
+[1em]
+Birth parish Western Line&                     &                     &      0.5443\sym{***}&      0.5419\sym{***}&                     &                     \\
+                    &                     &                     &     (0.057)         &     (0.056)         &                     &                     \\
+\hline
+N                   &     523,849         &     523,849         &     523,849         &     523,849         &     523,849         &     523,849         \\
+\hline\hline
+\multicolumn{7}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{7}{l}{\footnotesize \sym{*} \(p<0.05\), \sym{**} \(p<0.01\), \sym{***} \(p<0.001\)}\\
+\end{tabular}
+}

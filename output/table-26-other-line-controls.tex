@@ -1,0 +1,21 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{3}{c}}
+\hline\hline
+                    &\multicolumn{1}{c}{(1)}         &\multicolumn{1}{c}{(2)}         &\multicolumn{1}{c}{(3)}         \\
+                    &log(Total Power)         &log(Total Power Transmitted)         &log(Total Power Generated)         \\
+\hline
+Treated parishes    &      -0.388         &      -0.056         &      -0.379         \\
+                    &      (0.56)         &      (0.34)         &      (0.43)         \\
+other\_power\_line\_in\_parish&       0.685\sym{***}&       0.311\sym{**} &       0.510\sym{**} \\
+                    &      (0.25)         &      (0.15)         &      (0.22)         \\
+\hline
+Parish Area (km2)   &           X         &           X         &           X         \\
+Parish Population (1900)&           X         &           X         &           X         \\
+Railway in Parish   &           X         &           X         &           X         \\
+R-squared           &        0.08         &        0.03         &        0.08         \\
+Observations        &       1,684         &       1,684         &       1,684         \\
+F-stat              &                     &                     &                     \\
+\hline\hline
+\end{tabular}
+}

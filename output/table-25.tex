@@ -1,0 +1,20 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{2}{c}}
+\hline\hline
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}\\
+                    &\multicolumn{1}{c}{(mean) log\_income}&\multicolumn{1}{c}{(mean) log\_income}\\
+\hline
+western\_line\_parish\_dweller&       0.387\sym{***}&                     \\
+                    &      (0.10)         &                     \\
+Born in Western Line Parish&                     &       0.236\sym{***}\\
+                    &                     &      (0.08)         \\
+\hline
+Age                 &           X         &           X         \\
+Schooling above Primary and Railway in Parish&           X         &           X         \\
+HISCLASS shares     &           X         &           X         \\
+R-squared           &        0.40         &        0.31         \\
+Observations        &         475         &       2,148         \\
+\hline\hline
+\end{tabular}
+}

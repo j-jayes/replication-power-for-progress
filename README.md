@@ -25,7 +25,7 @@ This replication package includes the data and code used in 'Power for progress:
 | "Swedish Census 1930"                      | power-for-progress-1930-census_raw.dta | raw_data/  | FALSE    | Riksarkivet (2022)                    |
 | “Map Data on Electricity Lines”          | figure-3.rds                           | data/      | TRUE     | Hjulström (1940)                     |
 | "Location Data on Power Plants"            | table-2.dta & table-3.dta              | data/      | TRUE     |                                       |
-| "Swedish Censuses 1880-1900"               | Not available                          |            | FALSE    | Ruggles, et al (2024)                 |
+| "Swedish Censuses 1880-1900"               | table-1.dta                          | data/           | TRUE    | Ruggles, et al (2024)                 |
 | "Occupation coding lookup"                 | hisco_1930.dta                         | codebooks/ | TRUE     |                                       |
 | "Indirect Electricity Jobs Classification" | indirect_electricity_jobs_1930.dta     | codebooks/ | TRUE     |                                       |
 | "Parishes included in 1930 census"         | parishes_1930.dta                      | codebooks/ | TRUE     |                                       |
@@ -37,7 +37,7 @@ Data on the location of power plants and electricity lines were collected by the
 
 ### Public use data with required registration and provided extract
 
-Census data from Ruggles, et al (2024) and Union Membership data from Lundkvist and Andrae (1998) are not provided in this replication package as they do not allow for redistribution. The data are available from the original sources.
+Census data from Ruggles, et al (2024) and Union Membership data from Lundkvist and Andrae (1998) are not provided in this replication package as they do not allow for redistribution. The data are available from the original sources. See the `codebooks/` directory for a description of the variables used in the analysis.
 
 ### Confidential data
 

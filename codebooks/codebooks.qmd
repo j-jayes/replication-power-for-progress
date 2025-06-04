@@ -1,0 +1,501 @@
+---
+title: "Codebooks"
+format: gfm
+---
+
+```{r}
+#| echo: false
+#| eval: true
+#| message: false
+#| warning: false
+
+library(haven)
+library(tidyverse)
+```
+
+## Purpose
+
+This markdown document contains codebooks for the variables constructed from raw variables in the 1930 census. The codebooks provide a description of the variables, their values, and the construction process. Should you wish to replicate the analysis or use the variables in your own analysis, the codebooks will guide you through the process.
+
+## Variables constructed from the 1930 Swedish census
+
+### Marital Status
+
+The 1930 Swedish census contains a variable `civ` that captures the civil status of individuals. The variable `civ` is a string, containing values "O", "G", "E", "X", and other values. The variable `civ` is recoded into a new variable `marital_status` that captures the marital status in a more interpretable format. The recoding is done as follows:
+
+```{stata}
+#| eval: false
+
+* Load your dataset
+use "your_dataset.dta", clear
+
+* Generate the new variable marital_status
+gen marital_status = ""
+
+* Assign values to marital_status based on civ
+replace marital_status = "Unmarried" if civ == "O"
+replace marital_status = "Married" if civ == "G"
+replace marital_status = "Widow/Widower" if civ == "E"
+replace marital_status = "Divorced" if civ == "X"
+replace marital_status = "Other" if !inlist(civ, "O", "G", "E", "X")
+
+* Verify the changes
+list civ marital_status
+```
+
+
+### Schooling
+
+The 1930 Swedish census contains a variable `skola` that captures the level of schooling of individuals. The variable `skola` is a string, containing values from 0 to 9, as well as "X". The variable `skola` is recoded into a new variable `schooling_abbreviated` that captures the level of schooling in a more interpretable format. The recoding is done as follows:
+
+```{stata}
+#| eval: false
+
+* Load your dataset
+use "your_dataset.dta", clear
+
+* Generate the new variable schooling_abbreviated
+gen schooling_abbreviated = ""
+
+* Assign values to schooling_abbreviated based on schooling_raw
+replace schooling_abbreviated = "Post-secondary and university" if inlist(schooling_raw, 8, 9)
+replace schooling_abbreviated = "Post primary schooling" if inlist(schooling_raw, 4, 5, 6, 7)
+replace schooling_abbreviated = "Primary school" if schooling_raw == 3
+replace schooling_abbreviated = "Literate" if inlist(schooling_raw, 1, 2)
+replace schooling_abbreviated = "NA" if schooling_raw == 0
+
+* Verify the changes
+list schooling_raw schooling_abbreviated
+```
+
+
+### HISCLASS
+
+Occupations in 1930 have been coded into an abbreviated HISCLASS scheme in order to analyze the social class of individuals. The HISCLASS scheme is based on the HISCO classification system, which is a historical international standard classification of occupations. The HISCLASS scheme divides occupations into twelve social classes, ranging from "1. Higher managers" to "12. Unskilled farmworkers". Our abbreviated version creates seven groups from these 12 classes.
+
+
+| Number | Title                                      | Number | Title                    |
+|--------|--------------------------------------------|--------|--------------------------|
+| 1      | Higher managers                            | 1      | Elite                    |
+| 2      | Higher professionals                       |        |                          |
+| 3      | Lower managers                             | 2      | White collar             |
+| 4      | Lower professionals, clerical and sales personnel |        |                          |
+| 5      | Lower clerical and sales personnel         |        |                          |
+| 6      | Foremen                                    | 3      | Foremen                  |
+| 7      | Medium-skilled workers                     | 4      | Medium-skilled workers   |
+| 8      | Farmers and fishermen                      | 5      | Farmers and fishermen    |
+| 9      | Low-skilled workers                        | 6      | Low-skilled workers      |
+| 10     | Low-skilled farm workers                   |        |                          |
+| 11     | Unskilled workers                          | 7      | Unskilled workers        |
+| 12     | Unskilled farm workers                     |        |                          |
+
+
+Because the 1930 census lacked hisco codes associated with the occupational titles when we got access to it, we used the hisco codes from the 1900 and 1910 censuses from IPUMS to assign hisco codes to the 1930 census. The hisco codes were then used to assign the HISCLASS groups to the 1930 census. For the common occupational titles that were included in the 1930 census but did not exist in the 1900 and 1910 censuses, we hand coded the hisco codes and assigned the HISCLASS groups. The complete list of occupational titles and their associated HISCO codes and HISCLASS groups can be found in the dataset `hisco_1930.dta`, in the codebooks folder.
+
+The dataset `hisco_1930.dta` contains the following variables:
+
+- `occupation_title`: The title of the occupation.
+- `hisco_code`: The HISCO code associated with the occupation.
+- `hisclass_group`: The HISCLASS group assigned to the occupation.
+
+An excerpt of the dataset is shown below:
+
+```{r}
+hisco_1930 <- read_dta("hisco_1930.dta")
+
+hisco_1930 %>% head()
+```
+
+### Electricity job (direct)
+
+We define a new variable `electricity_job_direct` that captures whether an individual has a job directly related to electricity. The variable `electricity_job_direct` is a binary variable, taking the value 1 if the individual has a job directly related to electricity and 0 otherwise. The variable `electricity_job_direct` is constructed based on the variable `yrke`, which contains the occupation of the individual. The variable `electricity_job_direct` is constructed as follows:
+
+```{stata}
+#| eval: false
+
+* Load your dataset
+use "your_dataset.dta", clear
+
+* Generate the new variable electricity_job_direct
+gen electricity_job_direct = 0
+
+* Assign values to electricity_job_direct based on yrke
+replace electricity_job_direct = 1 if regexm(yrke, "elektr", "i")
+replace electricity_job_direct = 1 if yrke == "Elmontör"
+replace electricity_job_direct = 1 if yrke == "Linjearbetare"
+replace electricity_job_direct = 1 if yrke == "Kraftverksarbetare"
+
+* Verify the changes
+list yrke electricity_job_direct
+```
+
+### Electricity job (indirect)
+
+Similarly, we create a variable called `electricity_job_indirect` that captures whether an individual has a job indirectly related to electricity. The variable `electricity_job_indirect` is a binary variable, taking the value 1 if the individual has a job indirectly related to electricity and 0 otherwise. The variable `electricity_job_indirect` is constructed based on the variable `yrke`, which contains the occupation of the individual. The variable `electricity_job_indirect` is hand coded from a list of common occupations in the 1930 census that are indirectly related to electricity. 
+
+The list of indirect electricity jobs is located at `indirect_electricity_jobs_1930.dta`, in the codebooks folder. The dataset `indirect_electricity_jobs_1930.dta` contains the following variables:
+
+- `occupation`: The occupation that is indirectly related to electricity.
+
+An excerpt of the dataset is shown below:
+
+```{r}
+indirect_electricity_jobs_1930 <- read_dta("indirect_electricity_jobs_1930.dta")
+
+indirect_electricity_jobs_1930 %>% head()
+```
+
+To code this up in Stata, you can use the following code:
+
+```{stata}
+#| eval: false
+
+* Load the list of indirect electricity jobs
+use "codebooks/indirect_electricity_jobs_1930.dta", clear
+
+* Create a local macro with the list of occupations
+local occupations
+levelsof occupation, local(occupations)
+
+* Load your main dataset again
+use "your_dataset.dta", clear
+
+* Generate the new variable indirect_electricity_job
+gen indirect_electricity_job = 0
+
+* Assign values to indirect_electricity_job based on yrke
+foreach occ in `occupations' {
+    replace indirect_electricity_job = 1 if yrke == "`occ'"
+}
+
+* Verify the changes
+list yrke indirect_electricity_job
+```
+
+### Employed
+
+The variable `employed` is a binary variable, taking the value 1 if the individual is employed and 0 otherwise. The variable `employed` is constructed based on the variable `hisclass_group`, which contains the HISCLASS group of the individual. The variable `employed` is constructed as follows:
+
+```{stata}
+#| eval: false
+
+* Load your dataset
+use "your_dataset.dta", clear
+
+* Generate the new variable employed
+gen employed = 0
+
+* Assign value 1 to employed if hisclass_group is not missing
+replace employed = 1 if !missing(hisclass_group)
+
+* Verify the changes
+list hisclass_group employed
+```
+
+### Union Membership
+
+```{stata}
+#| eval: false
+
+* Load the data from the Excel file
+use "union_density_1930.dta", clear
+
+* Group by 'parish_code' and 'type_of_organization' and sum the number of members for 1900, 1910, and 1930
+collapse (sum) n_members_1900 n_members_1910 n_members_1930 ///
+         (first) population_1900 population_1910 population_1930, ///
+         by(parish_code type_of_organization)
+
+* Calculate union density for 1900, 1910, and 1930
+gen union_density_1900 = (n_members_1900 / population_1900) * 100
+gen union_density_1910 = (n_members_1910 / population_1910) * 100
+gen union_density_1930 = (n_members_1930 / population_1930) * 100
+
+* Load the original data again to get 'western_line' and 'distance_to_line'
+use "union_density_1930.dta"
+
+* Merge the grouped data with the original data
+merge 1:m parish_code using "data/parishes/union_membership_and_western_line_groups_merged.xlsx"
+
+* Drop duplicates
+duplicates drop
+
+* Group parishes into 'western_line', 'control', and 'other' based on the conditions
+gen group = "other"
+replace group = "western_line" if western_line == 1
+replace group = "control" if western_line == 0 & distance_to_line < 300
+
+* Cap the union densities at 100% for all years
+replace union_density_1900 = min(union_density_1900, 100)
+replace union_density_1910 = min(union_density_1910, 100)
+replace union_density_1930 = min(union_density_1930, 100)
+
+* Pivot the data
+reshape wide union_density_1900 union_density_1910 union_density_1930, i(parish_code) j(type_of_organization) string
+
+* Replace missing values with zero
+foreach var of varlist union_density_* {
+    replace `var' = 0 if missing(`var')
+}
+
+* Verify the changes
+list parish_code union_density_1900 union_density_1910 union_density_1930
+```
+
+### Distance to the Western Line
+
+TODO: Should I just delete this? There are so many files that we need to use, and so many mapping specific R settings that I doubt it will replicate well.
+
+```{r}
+#| eval: false
+
+library(readxl)
+library(sf)
+library(dplyr)
+
+run_analysis <- function(distances, source_type, outcome_var, exclude_touching, include_area, include_population) {  
+  # Reading shapefile
+  parishes_path <- 'data/maps/Swedish_parishes_1926.shp'
+  parishes <- st_read(parishes_path)
+  # Ensure both sf objects use the same Coordinate Reference System
+  parishes <- st_transform(parishes, crs = 4326)
+  
+  # Convert CRS to UTM zone 33N
+  parishes <- st_transform(parishes, crs = 32633)
+  # Calculate area in square kilometers and add as a new column
+  parishes$area_sqkm <- st_area(parishes) / 10^6
+  # Convert CRS back to latitude and longitude
+  parishes <- st_transform(parishes, crs = 4326)
+  # Create a new column called ref_code_short by removing the last 3 characters from ref_code
+  population_df$ref_code_short <- substr(population_df$ref_code, 1, nchar(population_df$ref_code) - 3)
+  # Drop ref_code column
+  population_df <- population_df %>% select(-ref_code)
+  # Do the same for parishes
+  parishes$ref_code_short <- substr(parishes$ref_code, 1, nchar(parishes$ref_code) - 3)
+  # Merge population_1930 to parishes
+  parishes <- left_join(parishes, population_df, by = "ref_code_short")
+  
+  # Spatial join
+  stations_with_parish <- st_join(geo_power_stations, parishes, join = st_within)
+  num_power_stations <- stations_with_parish %>% group_by(ref_code) %>% summarise(num_power_stations = n())
+  
+  # Create points for Power Station
+  station1_coords <- st_point(c(12.272571287279908, 58.27550603306433))
+  station2_coords <- st_point(c(17.443262677788724, 60.5633613884066))
+  
+  # Create line
+  line <- st_sfc(st_linestring(rbind(station1_coords, station2_coords)), crs = 4326)
+  
+  # Create a GeoDataFrame from the line
+  line_gdf <- st_sf(geometry = line)
+  
+  # Create buffers
+  buffer_gdfs <- lapply(distances, function(distance) {
+    st_transform(line_gdf, crs = 32633) %>%
+      st_buffer(distance * 1000) %>%
+      st_transform(crs = 4326)
+  })
+  
+  # Read in western_line parish list
+  western_line_parishes <- read_excel('data/parishes/western_line_parishes.xlsx')
+  
+  # Create column called ref_code, by concatenating the "SE/" and variable parish_code, if there are 9 digits, add a 0 in front
+  western_line_parishes$ref_code <- paste0('SE/', sprintf("%09d", western_line_parishes$parish_code))
+  
+  # Select only parish_name, parish_name_lower and ref_code
+  western_line_parishes <- western_line_parishes %>% select(parish_name, parish_name_lower, ref_code)
+  # Merge western_line_parishes with parishes
+  parishes <- left_join(parishes, western_line_parishes %>% select(ref_code), by = "ref_code", suffix = c("", "_western_line"))
+  parishes$treatment <- ifelse(!is.na(parishes$ref_code_western_line), 'western_line', 'control')
+  
+  # Create an object called western_line_parishes_geometry, which is a GeoDataFrame of the geometry of western_line parishes
+  western_line_parishes_geometry <- left_join(western_line_parishes, parishes %>% select(ref_code, geometry), by = "ref_code")
+  # Turn this into a GeoDataFrame
+  western_line_parishes_geometry <- st_as_sf(western_line_parishes_geometry, crs = 4326, coords = c("longitude", "latitude"))
+  
+  # Calculate total power in each parish
+  total_power <- stations_with_parish %>% group_by(ref_code) %>% summarise(amount_final = sum(amount_final, na.rm = TRUE))
+  
+  # Add these data to "parishes" and "control_parishes"
+  parishes <- left_join(parishes, total_power, by = "ref_code")
+  parishes <- left_join(parishes, num_power_stations, by = "ref_code")
+  
+  # In parishes, replace NaN with 0 in the outcome variables
+  parishes$amount_final[is.na(parishes$amount_final)] <- 0
+  parishes$num_power_stations[is.na(parishes$num_power_stations)] <- 0
+  parishes$area_sqkm[is.na(parishes$area_sqkm)] <- 0
+  
+  control_parishes <- list()
+  
+  for (i in seq_along(distances)) {
+    control_parishes[[distances[i]]] <- st_join(parishes, buffer_gdfs[[i]], join = st_intersects)
+  }
+  
+  # In control parishes, generate treatment column = 0
+  for (i in seq_along(distances)) {
+    control_parishes[[distances[i]]]$treatment <- 0
+  }
+  
+  # Find all parishes that touch a western_line parish
+  if (exclude_touching) {
+    touching_parishes <- st_intersection(parishes, western_line_parishes_geometry)
+    # Drop ref_code_2 and rename ref_code_1 to ref_code
+    touching_parishes <- touching_parishes %>% select(-ref_code_2) %>% rename(ref_code = ref_code_1)
+    
+    # Exclude these parishes from control groups
+    for (i in seq_along(distances)) {
+      control_parishes[[distances[i]]] <- control_parishes[[distances[i]]] %>% filter(!ref_code %in% touching_parishes$ref_code)
+    }
+  }
+  
+  # Create a DataFrame to store results
+  results_df <- data.frame(Distance = numeric(), Source_Type = character(), Outcome_Var = character(), Exclude_Touching = logical(), Include_area = logical(), Include_population = logical(), Coefficient = numeric(), CI_lower = numeric(), CI_upper = numeric(), P_value = numeric(), F_statistic = numeric(), n_observations = numeric(), R_squared = numeric(), stringsAsFactors = FALSE)
+  
+  parishes_with_treatment <- parishes %>% filter(treatment == 'western_line')
+  # Code treatment as 1
+  parishes_with_treatment$treatment <- 1
+  
+  return(results_df)
+}
+
+
+```
+
+
+## Census data from previous censuses for balance tests
+
+First we read in the census data from [IPUMS](https://international.ipums.org/) the extract specified here:
+
+#### Census Samples
+
+| Sample       | Density | Note |
+|--------------|---------|------|
+| Sweden 1880  | 100.0%  |      |
+| Sweden 1890  | 100.0%  |      |
+| Sweden 1900  | 100.0%  |      |
+| Sweden 1910  | 100.0%  |      |
+
+#### Variables
+
+| Type | Variable              | Label                                |
+|------|------------------------|--------------------------------------|
+| H    | COUNTRY               | Country                              |
+| H    | YEAR                  | Year                                 |
+| H    | SAMPLE                | IPUMS sample identifier              |
+| H    | SERIAL                | Household serial number              |
+| H    | HHWT                  | Household weight                     |
+| H    | GEO1_SE1880_1910      | Sweden, County 1880 - 1910           |
+| H    | PARSE                 | Sweden, Parish                       |
+| P    | PERNUM                | Person number                        |
+| P    | PERWT                 | Person weight                        |
+| P    | AGE                   | Age                                  |
+| P    | SEX                   | Sex                                  |
+| P    | BIRTHYR               | Year of birth                        |
+| P    | BPLSE1                | County of birth, Sweden              |
+| P    | BPLSE2                | Parish of birth, Sweden              |
+| P    | OCCISCO               | Occupation, ISCO general             |
+| P    | OCCHISCO              | Occupation, HISCO classification     |
+| P    | SE1880A_OCCSTRNG      | Occupation as transcribed            |
+| P    | SE1890A_OCCSTRNG      | Occupation as transcribed            |
+| P    | SE1900A_OCCSTRNG      | Occupation as transcribed            |
+| P    | SE1910A_OCCSTRNG      | Occupation as transcribed            |
+
+**Data Format**: `.dat (fixed-width text)`
+
+**Structure**: Rectangular (person)
+
+**Estimated Size**: 7147.2 MB
+
+
+```{r}
+#| eval: false
+
+# Example data
+df <- read_ipums_micro("path/ipums.xml")
+
+df_clean <- df %>%
+    janitor::clean_names()
+
+df_short <- df_clean %>%
+    # select the relevant columns
+    select(year, contains("occ"), parse, bplse1, bplse2, sex, birthyr) %>%
+    # remove labels to make files smaller
+    zap_labels() %>%
+    mutate(occstring = case_when(
+        year == 1880 ~ se1880a_occstrng,
+        year == 1890 ~ se1890a_occstrng,
+        year == 1900 ~ se1900a_occstrng,
+        year == 1910 ~ se1910a_occstrng,
+        TRUE ~ "error"
+    )) %>%
+    select(-contains("se1")) %>%
+    # tidy up occupational strings
+    mutate(
+        occstring = str_to_lower(occstring),
+        occstring = str_squish(occstring)
+    ) 
+
+df_short
+
+```
+
+```{r}
+#| eval: false
+hisco_1930 <- read_dta("hisco_1930.dta")
+```
+
+## Information on parishes in the 1930 Swedish census
+
+### Parish list
+
+The digitization of the 1930 Swedish census was not complete when we got access to it from the National Archives of Sweden. As a result, we include a dataset `parishes_1930.dta` that contains the unique parish names and reference codes from the 1930 census that we use in our analysis. The dataset `parishes_1930.dta` contains the following variables:
+
+- `parish_name`: The name of the parish.
+- `parish_code`: The reference code of the parish.
+
+An excerpt of the dataset is shown below:
+
+```{r}
+parishes_1930 <- read_dta("parishes_1930.dta")
+
+parishes_1930 %>% head()
+```
+
+
+### Western Line Parishes
+
+We created a binary variable for if a parish lay on the `western_line` between two large hydropower plants in Sweden. The variable `western_line` is a binary variable, taking the value 1 if the parish is on the western line and 0 otherwise. The variable `western_line` is constructed based on the electricity lines that were built between the hydropower plants in the early 20th century, and hand coded based on the geographical location of the parishes which intersected the main electricity line. The dataset we show below contains the names and reference codes of the parishes that are on the Western Line for which there is at least one individual born in that parish in the 1930 census.
+
+The list of Western Line parishes is located at `western_line_parishes_1930.dta`, in the codebooks folder. The dataset `western_line_parishes_1930.dta` contains the following variables:
+
+- `parish_code`: The reference code of the parish.
+- `parish_name`: The name of the parish.
+
+An excerpt of the dataset is shown below:
+
+```{r}
+df <- read_dta("hisco_1930.dta")
+
+df %>% head()
+```
+
+To code this up in Stata, you can join the dataset with the main dataset using the `parish_code` variable:
+
+```{stata}
+#| eval: false
+
+* Load the western line parishes dataset
+use "western_line_parishes_1930.dta", clear
+
+* Generate a variable to indicate that the parish is on the western line
+gen western_line = 1
+
+* Merge with the main dataset based on parish_code
+merge 1:m parish_code using "your_dataset.dta"
+
+* Verify the merge
+list parish_code _merge
+
+* Drop the _merge variable
+drop _merge
+
+```

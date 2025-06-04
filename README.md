@@ -18,6 +18,10 @@ This replication package includes the data and code used in 'Power for progress:
 - [ ] **No data can be made** publicly available.
 - [ ] Confidential data used in this paper and not provided as part of the public replication package will be preserved for \_\_\_ years after publication, in accordance with journal policies.
 
+### Details on Cleaning Script
+
+The cleaning script is provided in the `programs/` directory. The main script is `programs/01_dataprep/main.R`, which runs all data preparation scripts in sequence. The scripts clean and merge various datasets, including the 1930 Swedish Census, historical maps, and occupational coding data. The final output is a dataset ready for analysis, which can be found in the `data/derived/` directory.
+
 ### Details on each Data Source
 
 | Data.Name                                  | Data.Files                             | Location   | Provided | Citation                              |
@@ -43,13 +47,13 @@ Census data from Ruggles, et al (2024) and Union Membership data from Lundkvist 
 
 The Swedish census data from 1930 is provided to us by Riksarkivet (2022) and is not publicly available. To replicate this analysis, researchers must obtain the data from Riksarkivet. We were provided with a sample of the data which had been transcribed at the time, containing approximately 30% of the total number of parishes in Sweden in 1930. In order to allow replication when the full census is digitized, we include a list of parishes used in our analysis in the `codebooks/` directory.
 
-## Dataset list
+<!-- ## Dataset list
 
 | Data file                             | Source      | Notes                                                                        | Provided |
 | ------------------------------------- | ----------- | ---------------------------------------------------------------------------- | -------- |
 | `data/raw/lbd.dta`                  | LBD         | Confidential                                                                 | No       |
 | `data/raw/terra.dta`                | IPUMS Terra | As per terms of use                                                          | Yes      |
-| `data/derived/regression_input.dta` | All listed  | Combines multiple data sources, serves as input for Table 2, 3 and Figure 5. | Yes      |
+| `data/derived/regression_input.dta` | All listed  | Combines multiple data sources, serves as input for Table 2, 3 and Figure 5. | Yes      | -->
 ## Key Variable Descriptions
 
 For a complete list and more details, please refer to `/codebooks/codebook.qmd`. The primary individual-level dataset from the 1930 Swedish Census (restricted access) is represented in files like `table-5.dta`, which contains approximately 523,849 observations and around 35 variables.
@@ -218,13 +222,13 @@ Approximate storage space needed:
 The code was last run on a **M2 MacBook Pro laptop with MacOS version 14.6.1 with 50GB of free space and 16BG of RAM**.
 
 ## Description of programs/code
-
+<!-- 
 - Programs in `programs/01_dataprep` will extract and reformat all datasets referenced above. The file `programs/01_dataprep/main.do` will run them all.
 - Programs in `programs/02_analysis` generate all tables and figures in the main body of the article. The program `programs/02_analysis/main.do` will run them all. Each program called from `main.do` identifies the table or figure it creates (e.g., `05_table5.do`). Output files are called appropriate names (`table5.tex`, `figure12.png`) and should be easy to correlate with the manuscript.
 - Programs in `programs/03_appendix` will generate all tables and figures in the online appendix. The program `programs/03_appendix/main-appendix.do` will run them all.
 - Ado files have been stored in `programs/ado` and the `main.do` files set the ADO directories appropriately.
 - The program `programs/00_setup.do` will populate the `programs/ado` directory with updated ado packages, but for purposes of exact reproduction, this is not needed. The file `programs/00_setup.log` identifies the versions as they were last updated.
-- The program `programs/config.do` contains parameters used by all programs, including a random seed. Note that the random seed is set once for each of the two sequences (in `02_analysis` and `03_appendix`). If running in any order other than the one outlined below, your results may differ.
+- The program `programs/config.do` contains parameters used by all programs, including a random seed. Note that the random seed is set once for each of the two sequences (in `02_analysis` and `03_appendix`). If running in any order other than the one outlined below, your results may differ. -->
 
 ## Instructions to Replicators
 

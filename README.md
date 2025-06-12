@@ -5,7 +5,7 @@ By Jonathan Jayes, Kerstin Enflo and Jakob Molinder
 
 ## Overview
 
-This replication package includes the data and code used in 'Power for progress: The impact of electricity on individual labor market outcomes.' The provided code constructs the analysis dataset from various historical data sources and generates all tables and figures used in the paper. The package is designed to be run in R and Stata, and includes the necessary scripts to reproduce the analysis. It should take 10 minutes in total to reproduce the results.
+This replication package includes the data and code used in 'Power for progress: The impact of electricity on individual labor market outcomes.' The provided code constructs the analysis dataset from various historical data sources and generates all tables and figures used in the paper. The package is designed to be run in R and Stata, and includes the necessary scripts to reproduce the analysis. It should take 20 minutes in total to reproduce the results.
 
 ## Data Availability and Provenance Statements
 
@@ -29,7 +29,7 @@ The cleaning script is provided in the `programs/` directory. The main script is
 | "Swedish Census 1930"                      | power-for-progress-1930-census_raw.dta | raw_data/  | FALSE    | Riksarkivet (2022)                    |
 | “Map Data on Electricity Lines”          | figure-3.rds                           | data/      | TRUE     | Hjulström (1940)                     |
 | "Location Data on Power Plants"            | table-2.dta & table-3.dta              | data/      | TRUE     |                                       |
-| "Swedish Censuses 1880-1900"               | table-1.dta                          | data/           | TRUE    | Ruggles, et al (2024)                 |
+| "Swedish Censuses 1880-1910"               | table-1.dta                          | data/           | FALSE    | Ruggles, et al (2024)                 |
 | "Occupation coding lookup"                 | hisco_1930.dta                         | codebooks/ | TRUE     |                                       |
 | "Indirect Electricity Jobs Classification" | indirect_electricity_jobs_1930.dta     | codebooks/ | TRUE     |                                       |
 | "Parishes included in 1930 census"         | parishes_1930.dta                      | codebooks/ | TRUE     |                                       |
@@ -92,10 +92,10 @@ For a complete list and more details, please refer to `/codebooks/codebook.qmd`.
 | `railway_in_current_parish`   | Railway in Current Parish (indicator)                                          | Historical railway data joined to 1930 Census            |
 | `mean_farm_share_1910`        | Mean share of farming households in birth parish in 1910 (control)             | 1910 Census data, joined to 1930 Census                  |
 | `urban_parish_1910`           | Birth parish has more non-farming households than average in 1910 (control)    | 1910 Census data, joined to 1930 Census                  |
-| `schooling`                   | Schooling Abbreviation (categorical: less than primary, primary, secondary, tertiary) | 1930 Census, coded as per paper [cite: 110, 111]           |
+| `schooling`                   | Schooling Abbreviation (categorical: less than primary, primary, secondary, tertiary) | 1930 Census, coded as per paper           |
 | `marital`                     | Marital Status (categorical)                                                   | 1930 Census                                                |
-| `hisclass`                    | HISCLASS Group Abbreviation (social class scheme)                              | Coded from 1930 Census occupational data via HISCO [cite: 94, 99] |
-| `hisco_code_2_digit`          | HISCO code two digit (occupational classification)                             | Coded from 1930 Census occupational data [cite: 94, 97]  |
+| `hisclass`                    | HISCLASS Group Abbreviation (social class scheme)                              | Coded from 1930 Census occupational data via HISCO |
+| `hisco_code_2_digit`          | HISCO code two digit (occupational classification)                             | Coded from 1930 Census occupational data  |
 
 
 ### Power stations and transformers in 1926 at the Parish level
@@ -234,28 +234,11 @@ The code was last run on a **M2 MacBook Pro laptop with MacOS version 14.6.1 wit
 
 <!-- > INSTRUCTIONS: The first two sections ensure that the data and software necessary to conduct the replication have been collected. This section then describes a human-readable instruction to conduct the replication. This may be simple, or may involve many complicated steps. It should be a simple list, no excess prose. Strict linear sequence. If more than 4-5 manual steps, please wrap a main program/Makefile around them, in logical sequences. Examples follow. -->
 
-- Edit `programs/config.do` to adjust the default path
-- Run `programs/00_setup.do` once on a new system to set up the working environment.
-- Download the data files referenced above. Each should be stored in the prepared subdirectories of `data/`, in the format that you download them in. Do not unzip. Scripts are provided in each directory to download the public-use files. Confidential data files requested as part of your FSRDC project will appear in the `/data` folder. No further action is needed on the replicator's part.
-- Run `programs/01_main.do` to run all steps in sequence.
-
-### Details
-
-- `programs/00_setup.do`: will create all output directories, install needed ado packages.
-  - If wishing to update the ado packages used by this archive, change the parameter `update_ado` to `yes`. However, this is not needed to successfully reproduce the manuscript tables.
-- `programs/01_dataprep`:
-  - These programs were last run at various times in 2018.
-  - Order does not matter, all programs can be run in parallel, if needed.
-  - A `programs/01_dataprep/main.do` will run them all in sequence, which should take about 2 hours.
-- `programs/02_analysis/main.do`.
-  - If running programs individually, note that ORDER IS IMPORTANT.
-  - The programs were last run top to bottom on July 4, 2019.
-- `programs/03_appendix/main-appendix.do`. The programs were last run top to bottom on July 4, 2019.
-- Figure 1: The figure can be reproduced using the data provided in the folder “2_data/data_map”, and ArcGIS Desktop (Version 10.7.1) by following these (manual) instructions:
-  - Create a new map document in ArcGIS ArcMap, browse to the folder
-    “2_data/data_map” in the “Catalog”, with files "provinceborders.shp", "lakes.shp", and "cities.shp".
-  - Drop the files listed above onto the new map, creating three separate layers. Order them with "lakes" in the top layer and "cities" in the bottom layer.
-  - Right-click on the cities file, in properties choose the variable "health"... (more details)
+- Download the data files referenced above from the various sources. Each should be stored in the `data/raw`, in the format that you download them in. 
+- Run `programs/01_dataprep/main.R` to process the raw census data and other datasets, and create the derived datasets used in the analysis. This will create the `data/` directory with the processed data files.
+- Run `programs/00-set_dataset_params_for_export.do` once on a new system to set up the working environment.
+- Run `programs/0-replication-setup.do` to install all necessary ado packages and set up the files for each table from the raw data.
+- Then each table can be generated by running the corresponding program in the `programs/` directory, e.g., `programs/table-1.do` for Table 1.
 
 ## List of tables and programs
 
@@ -271,35 +254,47 @@ The provided code reproduces:
 
 | Figure/Table # | Program              | Output file   | Note                                               |
 | -------------- | -------------------- | ------------- | -------------------------------------------------- |
-| Table 1        | programs/table-1.do  | table-1.tex   | Requires confidential data                         |
-| Table 2        | programs/table-2.do  | table-2.tex   |                                                    |
-| Table 3        | programs/table-3.do  | table-3.tex   |                                                    |
-| Table 4        | programs/table-4.do  | table-4.tex   | Requires confidential data                         |
-| Table 5        | programs/table-5.do  | table-5.tex   | Requires confidential data                         |
-| Table 6        | programs/table-6.do  | table-6.tex   | Requires confidential data                         |
-| Table 7        | programs/table-7.do  | table-7.tex   | Requires confidential data                         |
-| Table 8        | programs/table-8.do  | table-8.tex   | Requires confidential data                         |
-| Table 9        | programs/table-9.do  | table-9.tex   | Requires confidential data                         |
-| Table 10       | programs/table-10.do | table-10.tex  | Requires confidential data                         |
-| Table 11       | programs/table-11.do | table-11.tex  | Requires confidential data                         |
-| Table 12       | programs/table-12.do | table-12.tex  | Requires confidential data                         |
-| Table 13       | programs/table-13.do | table-13.tex  | Requires confidential data                         |
-| Table 14       | programs/table-14.do | table-14.tex  | Requires confidential data                         |
-| Table 15       | programs/table-15.do | table-15.tex  | Requires confidential data                         |
-| Figure 1       | programs/figures.qmd | figure-1.png  | Source: Vattenfall (1948), Bengtsson et al. (2021) |
-| Figure 2       | programs/figures.qmd | figure-2.png  | Source: Schön (2000)                              |
-| Figure 3       | programs/figures.qmd | figure-3.png  | Source: Hjulström (1940), Junkka (2015)           |
-| Figure 4       | programs/figures.qmd | figure-4.png  | Requires confidential data                         |
-| Figure 4       | programs/figures.qmd | figure-4.png  | Requires confidential data                         |
-| Figure 5       | programs/figures.qmd | figure-5.png  | Requires confidential data                         |
-| Figure 6       | programs/figures.qmd | figure-6.png  | Requires confidential data                         |
-| Figure 7       | programs/figures.qmd | figure-7.png  | Requires confidential data                         |
-| Figure 8       | programs/figures.qmd | figure-8.png  | Requires confidential data                         |
-| Figure 9       | programs/figures.qmd | figure-9.png  | Requires confidential data                         |
-| Figure 12      | programs/figures.qmd | figure-12.png | Requires confidential data                         |
-| Figure 13      | programs/figures.qmd | figure-13.png | Requires confidential data                         |
-| Figure 14      | programs/figures.qmd | figure-14.png | Requires confidential data                         |
-| Figure 15      | programs/figures.qmd | figure-15.png | Requires confidential data                         |
+| Table 1        | programs/table-1.do  | table-1.tex   | Requires public IPUMS data                         |
+| Table 2        | programs/table-2.do  | table-2.tex   | Data provided by authors from Ekwall (1924-26) reports |
+| Table 3        | programs/table-3.do  | table-3.tex   | Data provided by authors from Ekwall (1924-26) reports |
+| Table 4        | programs/table-4.do  | table-4.tex   | Requires confidential 1930 census data             |
+| Table 5        | programs/table-5.do  | table-5.tex   | Requires confidential 1930 census data             |
+| Table 6        | programs/table-6.do  | table-6.tex   | Requires confidential 1930 census data             |
+| Table 7        | programs/table-7.do  | table-7.tex   | Requires confidential 1930 census data             |
+| Table 8        | programs/table-8.do  | table-8.tex   | Requires public IPUMS data                         |
+| Table 9        | programs/table-9.do  | table-9.tex   | Requires confidential 1930 census & public IPUMS data |
+| Table 10       | programs/table-10.do | table-10.tex  | Requires public IPUMS data                         |
+| Table 11       | programs/table-11.do | table-11.tex  | Requires public IPUMS data                         |
+| Table 12       | programs/table-12.do | table-12.tex  | Requires public IPUMS data                         |
+| Table 13       | programs/table-13.do | table-13.tex  | Requires public IPUMS data                         |
+| Table 14       | programs/table-14.do | table-14.tex  | Requires confidential 1930 census data             |
+| Table 15       | programs/table-15.do | table-15.tex  | Requires Union Density & confidential 1930 census data |
+| Table 16       | programs/table-16.do | table-16.tex  | Requires Union Density & confidential 1930 census data |
+| Table 17       | programs/table-17.do | table-17.tex  | Constructed from public sources        |
+| Table 18       | programs/table-18.do | table-18.tex  | Requires confidential 1930 census data             |
+| Table 19       | programs/table-19.do | table-19.tex  | Requires confidential 1930 census data             |
+| Table 20       | programs/table-20.do | table-20.tex  | Requires confidential 1930 census data             |
+| Table 21       | programs/table-21.do | table-21.tex  | Requires confidential 1930 census data             |
+| Table 22       | programs/table-22.do | table-22.tex  | Requires confidential 1930 census data             |
+| Table 23       | programs/table-23.do | table-23.tex  | Requires confidential 1930 census data             |
+| Table 24       | programs/table-24.do | table-24.tex  | Requires Union Density & confidential 1930 census data |
+| Table 25       | programs/table-25.do | table-25.tex  | Requires Union Density & confidential 1930 census data |
+| Table 26       | programs/table-26.do | table-26.tex  | Requires Union Density & confidential 1930 census data |
+| Table 27       | programs/table-27.do | table-27.tex  | Requires confidential 1930 census data             |
+| Figure 1       | programs/figures.qmd | figure-1.png  | Source: Vattenfall (1948), Bengtsson et al. (2021a) |
+| Figure 2       | programs/figures.qmd | figure-2.png  | Source: Hjulström (1940)                           |
+| Figure 3       | programs/figures.qmd | figure-3.png  | Requires confidential 1930 census data             |
+| Figure 4       | programs/figures.qmd | figure-4.png  | Requires confidential 1930 census data             |
+| Figure 5       | programs/figures.qmd | figure-5.png  | Requires confidential 1930 census data             |
+| Figure 6       | programs/figures.qmd | figure-6.png  | Requires confidential 1930 census data             |
+| Figure 7       | programs/figures.qmd | figure-7.png  | Requires confidential 1930 census data             |
+| Figure 8       | programs/figures.qmd | figure-8.png  | Requires Union Density & confidential 1930 census data |
+| Figure 9       | programs/figures.qmd | figure-9.png  | Requires confidential 1930 census data             |
+| Figure 10      | programs/figures.qmd | figure-10.png | Source: Hjulström (1940)                           |
+| Figure 11      | programs/figures.qmd | figure-11.png | Requires public IPUMS data                         |
+| Figure 12      | programs/figures.qmd | figure-12.png | Requires confidential 1930 census data             |
+| Figure 13      | programs/figures.qmd | figure-13.png | Requires confidential 1930 census data             |
+| Figure 14      | programs/figures.qmd | figure-14.png | Requires Union Density & confidential 1930 census data |
 
 ## References
 

@@ -1,32 +1,68 @@
-* Table 7
+/*******************************************************************************
+* Project:      Power for progress: The impact of electricity on individual 
+* labor market outcomes
+* Authors:      Jonathan Jayes, Jakob Molinder, and Kerstin Enflo
+*
+*
+* Do-file:      table-7.do
+* Purpose:      Replicates Table 7: Mean incomes by job type and birth parish.
+* This table compares the mean income for individuals in the
+* Western Line vs. control parishes, broken down by job category.
+*
+*
+* Last-updated: 12 June 2025
+*
+*******************************************************************************/
+
+*===============================================================================
+* SETUP
+*===============================================================================
 
 clear
-cd "$project_path"
-use "data/table-7-jan-25.dta"
 eststo clear
+cd "$project_path"
 
-label var western_line_parish_dweller "Western Line Parish Dweller in 1930"
-label var western_line_parish "Born in a Western Line Parish"
-
-
-* Regression 1 is baseline from table 5
-
-reg log_income western_line_parish age age_2 female i.marital i.schooling i.hisco_code_2_d railway_in_birth_parish, vce(cluster birth_parish_ref_code)
-eststo Model1
-
-* regression 2 is stayeys in table 7-jan-25
-reg log_income western_line_parish age age_2 female i.marital i.schooling i.hisco_code_2_d railway_in_birth_parish if stayer_in_birth_parish == 1, vce(cluster birth_parish_ref_code)
-eststo Model2
+* This script assumes the data file contains flags for job categories.
+use "data/table-7.dta", clear
 
 
-* Regression 3 is western_line_parish_dwellers
-reg log_income western_line_parish_dweller age age_2 female i.marital i.schooling i.hisco_code_2_d railway_in_birth_parish, vce(cluster birth_parish_ref_code)
-eststo Model3 
+*===============================================================================
+* PREPARATION & ANALYSIS
+*===============================================================================
+
+* Create income variable from log_income
+gen income = exp(log_income)
+
+* The script runs a t-test for four different job categories and stores
+* the results using eststo.
+
+* --- 1. Electricity job, direct ---
+eststo Direct: estpost ttest income if electricity_job_direct == 1, by(western_line_parish)
+estadd local category "Electricity Job Direct"
+
+* --- 2. Electricity job, indirect ---
+eststo Indirect: estpost ttest income if electricity_job_indirect == 1, by(western_line_parish)
+estadd local category "Electricity Job Indirect"
+
+* --- 3. Other jobs (non-electricity related) ---
+eststo Other: estpost ttest income if electricity_job_direct == 0 & electricity_job_indirect == 0, by(western_line_parish)
+estadd local category "Other Jobs"
+
+* --- 4. All jobs (overall average) ---
+eststo All: estpost ttest income, by(western_line_parish)
+estadd local category "All Jobs"
 
 
-esttab Model1 Model2 Model3 using $output_dir/table-7-jan-25.tex, label replace ///
-  keep(western_line_parish western_line_parish_dweller) ///
-  mtitles("Baseline" "Lives in Parish of Birth" "Location in 1930") ///
-  stats(r2 N, fmt(2 %9.0fc) labels("R-squared" "Observations")) ///
-  cells(b(star fmt(3)) se(par fmt(2))) collabels(none)
-  
+*===============================================================================
+* EXPORT TABLE TO LATEX
+*===============================================================================
+
+* `esttab` is used to combine the four stored estimates into a single table.
+* The `stats()` option is customized to display the job category, means for
+* each group, the difference, the p-value, and the observation count.
+
+esttab Direct Indirect Other All using "$output_dir/table-7.tex", replace ///
+    label nonumbers star(* 0.10 ** 0.05 *** 0.01) ///
+    stats(category mu_1 mu_2 b p N, ///
+    fmt(1 2 2 2 4 %9.0gc) ///
+    labels("Job Category" "Control Parish (mean)" "Western Line (mean)" "Difference" "p-value" "Observations"))

@@ -1,14 +1,13 @@
 ** This file reads in the census data and prepares it for export to this folder
 
 *---------------------------------------------------*
-* Stata Dofile: Data Preparation for Paper-3-Analysis*
+* Stata Dofile: Data Preparation for Power for Progress*
 *---------------------------------------------------*
 
 clear all
 set more off 
 
 * Setting the working directory
-* cd "C:\Users\User\Documents\Recon\paper-3-analysis"
 
 cd "/Users/jonathanjayes/Documents/PhD/paper-3-analysis/"
 
@@ -18,9 +17,6 @@ cd "/Users/jonathanjayes/Documents/PhD/paper-3-analysis/"
 
 * Load the dataset for the 1930 census
 use "data/census/1930_census_regression_dataset_excl_unbalanced_controls.dta"
-
-
-// testing, drop inc_score_1930 and log_inc_score_1930
 
 *---------------------------------------------------*
 * Encoding and Variable Creation

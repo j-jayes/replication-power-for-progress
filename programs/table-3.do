@@ -1,4 +1,19 @@
-* Table 1
+/*******************************************************************************
+* Project:      Power for progress: The impact of electricity on individual 
+* labor market outcomes
+* Authors:      Jonathan Jayes, Jakob Molinder, and Kerstin Enflo
+*
+*
+* Do-file:      table-3.do
+* Purpose:      Replicates Table 3: Number of electrical connections in Western 
+* Line vs. Control parishes
+*
+*
+* Last-updated: 12 June 2025
+*
+*******************************************************************************/
+
+* Table 3
 
 clear
 cd "$project_path"
@@ -59,4 +74,3 @@ esttab Model1 Model2 Model3 using $output_dir/table-3.tex, label replace ///
   stats(area pop rail lat lon lat3 lon3 r2 N mean_depvar, fmt(1 1 1 1 1 1 1 2 %9.0fc 2 2) labels("Parish Area (km2)" "Parish Population (1900)" "Railway in Parish" "Latitude" "Longitude" "Latitude Cubed" "Longitude Cubed" "R-squared" "Observations" "Mean Dependent Var")) ///
   mlabels("log(Total connections)" "log(N. transformers)" "log(N. generators) (water, steam, diesel)") ///
   cells(b(star fmt(3)) se(par fmt(2))) collabels(none)
-

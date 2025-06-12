@@ -1,22 +1,70 @@
-* Table 6
+/*******************************************************************************
+* Project:      Power for progress: The impact of electricity on individual 
+* labor market outcomes
+* Authors:      Jonathan Jayes, Jakob Molinder, and Kerstin Enflo
+*
+*
+* Do-file:      table-6.do
+* Purpose:      Replicates Table 6: Kitagawa-Oaxaca-Blinder Decomposition of
+* the Income Differential between Western Line and Control parishes.
+*
+*
+* Last-updated: 12 June 2025
+*
+*******************************************************************************/
+
+*===============================================================================
+* SETUP
+*===============================================================================
 
 clear
-cd "$project_path"
-use "data/table-6.dta"
-  
 eststo clear
-
-oaxaca log_income age age_2 female marital_1 marital_2 marital_3 marital_5 ///
- schooling_2 schooling_3 schooling_4 ///
- hisco_code_2_d_1 hisco_code_2_d_2 hisco_code_2_d_3 hisco_code_2_d_4 hisco_code_2_d_5 hisco_code_2_d_6 hisco_code_2_d_7 hisco_code_2_d_8 hisco_code_2_d_9 hisco_code_2_d_10 hisco_code_2_d_11 hisco_code_2_d_12 hisco_code_2_d_13 hisco_code_2_d_14 hisco_code_2_d_15 hisco_code_2_d_16 hisco_code_2_d_17 hisco_code_2_d_18 hisco_code_2_d_19 hisco_code_2_d_20 hisco_code_2_d_21 hisco_code_2_d_22 hisco_code_2_d_23 hisco_code_2_d_24 hisco_code_2_d_25 hisco_code_2_d_26 hisco_code_2_d_27 hisco_code_2_d_28 hisco_code_2_d_29 hisco_code_2_d_30 hisco_code_2_d_31 hisco_code_2_d_32 hisco_code_2_d_33 hisco_code_2_d_34 hisco_code_2_d_35 hisco_code_2_d_36 hisco_code_2_d_37 hisco_code_2_d_38 hisco_code_2_d_39 hisco_code_2_d_40 hisco_code_2_d_41 hisco_code_2_d_42 hisco_code_2_d_43 hisco_code_2_d_44 hisco_code_2_d_45 hisco_code_2_d_46 hisco_code_2_d_47 hisco_code_2_d_48 hisco_code_2_d_49 hisco_code_2_d_50 hisco_code_2_d_51 hisco_code_2_d_52 hisco_code_2_d_53 hisco_code_2_d_54 hisco_code_2_d_55 hisco_code_2_d_56 hisco_code_2_d_57 hisco_code_2_d_58 hisco_code_2_d_59 hisco_code_2_d_60 hisco_code_2_d_61 hisco_code_2_d_62 hisco_code_2_d_63 hisco_code_2_d_64 hisco_code_2_d_65 hisco_code_2_d_66 hisco_code_2_d_67 hisco_code_2_d_68 hisco_code_2_d_69 hisco_code_2_d_70 hisco_code_2_d_71 hisco_code_2_d_72 hisco_code_2_d_73 hisco_code_2_d_74 railway_in_birth_parish ///
- , by(western_line_parish) pooled vce(cluster birth_parish_ref_code) swap relax
- 
-eststo Model1
-estadd local marital_status_schooling_rail "X"
+cd "$project_path"
+use "data/table-6.dta", clear
 
 
-esttab Model1 using $output_dir/table-6.tex, label replace ///
-  keep(group_1  group_2 difference explained unexplained) ///
-  star(* 0.10 ** 0.05 *** 0.01) ///
-  stats(N, fmt(%9.0fc) labels("Observations")) ///
-  cells(b(star fmt(3)) se(par fmt(2)))
+*===============================================================================
+* PREPARATION
+*===============================================================================
+
+* Generate squared age term for use in the model
+gen age_2 = age^2
+
+*===============================================================================
+* OAXACA DECOMPOSITION
+*===============================================================================
+
+* This command decomposes the difference in log_income between the two groups
+* defined by `western_line_parish`.
+*
+* NOTE: We use factor variables (i.) for marital status, schooling, and
+* HISCO codes. This is much cleaner than listing each dummy variable manually.
+
+oaxaca log_income age age_2 female i.marital i.schooling i.hisco_code_2_d ///
+    railway_in_birth_parish, by(western_line_parish) pooled ///
+    vce(cluster birth_parish_ref_code) swap relax
+
+* The `swap` option is used because the "control" group (western_line_parish=0)
+* is group 1 by default, and we want to show the "Western Line" group first.
+
+
+*===============================================================================
+* EXPORT TABLE TO LATEX
+*===============================================================================
+
+* The `esttab` command is customized to replicate the paper's table format.
+* We specify which results to keep and how to label them.
+
+esttab using "$output_dir/table-6.tex", replace ///
+    cells("b(star fmt(3)) se(par fmt(2))") ///
+    title("Kitagawa-Oaxaca-Blinder Decomposition of Income Differential") ///
+    nonumbers nodepvars booktabs alignment(D{.}{.}{-1}) collabels(none) ///
+    keep(group_2 group_1 difference explained unexplained) ///
+    rename(group_2 "Western Line" group_1 "Control parish" ///
+           difference "Difference" explained "Explained" unexplained "Unexplained") ///
+    star(* 0.10 ** 0.05 *** 0.01) ///
+    stats(N, fmt(%9.0fc) labels("Observations")) ///
+    postfoot("\hline \textbf{Percentage of Difference} & \\ ///
+              Explained (\%) & @p_explained \% \\ ///
+              Unexplained (\%) & @p_unexplained \% \\ \hline") ///
+    substitute("\%" "\\%")

@@ -27,7 +27,7 @@ The 1930 Swedish census contains a variable `civ` that captures the civil status
 #| eval: false
 
 * Load your dataset
-use "your_dataset.dta", clear
+use "swedish_census_1930.dta", clear
 
 * Generate the new variable marital_status
 gen marital_status = ""
@@ -52,7 +52,7 @@ The 1930 Swedish census contains a variable `skola` that captures the level of s
 #| eval: false
 
 * Load your dataset
-use "your_dataset.dta", clear
+use "swedish_census_1930.dta", clear
 
 * Generate the new variable schooling_abbreviated
 gen schooling_abbreviated = ""
@@ -114,7 +114,7 @@ We define a new variable `electricity_job_direct` that captures whether an indiv
 #| eval: false
 
 * Load your dataset
-use "your_dataset.dta", clear
+use "swedish_census_1930.dta", clear
 
 * Generate the new variable electricity_job_direct
 gen electricity_job_direct = 0
@@ -158,7 +158,7 @@ local occupations
 levelsof occupation, local(occupations)
 
 * Load your main dataset again
-use "your_dataset.dta", clear
+use "swedish_census_1930.dta", clear
 
 * Generate the new variable indirect_electricity_job
 gen indirect_electricity_job = 0
@@ -180,7 +180,7 @@ The variable `employed` is a binary variable, taking the value 1 if the individu
 #| eval: false
 
 * Load your dataset
-use "your_dataset.dta", clear
+use "swedish_census_1930.dta", clear
 
 * Generate the new variable employed
 gen employed = 0
@@ -242,8 +242,6 @@ list parish_code union_density_1900 union_density_1910 union_density_1930
 ```
 
 ### Distance to the Western Line
-
-TODO: Should I just delete this? There are so many files that we need to use, and so many mapping specific R settings that I doubt it will replicate well.
 
 ```{r}
 #| eval: false
@@ -490,7 +488,7 @@ use "western_line_parishes_1930.dta", clear
 gen western_line = 1
 
 * Merge with the main dataset based on parish_code
-merge 1:m parish_code using "your_dataset.dta"
+merge 1:m parish_code using "swedish_census_1930.dta"
 
 * Verify the merge
 list parish_code _merge

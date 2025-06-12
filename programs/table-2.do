@@ -1,3 +1,17 @@
+/*******************************************************************************
+* Project:      Power for progress: The impact of electricity on individual 
+* labor market outcomes
+* Authors:      Jonathan Jayes, Jakob Molinder, and Kerstin Enflo
+*
+*
+* Do-file:      table-2.do
+* Purpose:      Replicates Table 2: Energy use in Western Line vs. Control parishes
+*
+*
+* Last-updated: 12 June 2025
+*
+*******************************************************************************/
+
 * Table 2
 
 clear
@@ -8,10 +22,6 @@ eststo clear
 
 gen latitude_3 = latitude^3
 gen longitude_3 = longitude^3
-
-
-** ssc install acreg
-
 
 quietly summarize log_total_power
 local mean1 = round(r(mean), 0.01)

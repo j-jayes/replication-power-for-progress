@@ -10,7 +10,6 @@
 #   - data/balance-tests/03-control-parishes-to-drop.xlsx
 #   - data/census/04-merged-census-data-intermediate.parquet (intermediate, written and read by this script)
 # Output Files:
-#   - data/temp/sample-check-20rows-merged-census.xlsx (sample Excel output)
 #   - data/census/04-merged-census-data-intermediate.parquet (intermediate output)
 #   - data/census/05-merged-census-data-filtered-unbalanced.parquet (intermediate output)
 #   - data/census/06-final-regression-dataset-for-stata.dta (final Stata output)

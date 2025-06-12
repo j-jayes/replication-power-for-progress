@@ -1,48 +1,79 @@
-* Table 20 pt 1
- 
+/*******************************************************************************
+* Project:      Power for progress: The impact of electricity on individual 
+* labor market outcomes
+* Authors:      Jonathan Jayes, Jakob Molinder, and Kerstin Enflo
+*
+*
+* Do-file:      table-20.do
+* Purpose:      Replicates Table 20: Western Line Parish on Log Income Score. 
+* This isolates occupational sorting from within-occupation wage
+* effects by using a national median income score. 
+*
+*
+* Last-updated: 12 June 2025
+*
+*******************************************************************************/
+
+*===============================================================================
+* SETUP
+*===============================================================================
+
 clear
-cd "$project_path"
 eststo clear
-
-use "data/table-20.dta"
-
-global x age age_2 female i.marital i.schooling i.hisclass railway_in_birth_parish
-
-* Run quantile regressions for each quantile and store the results
-foreach q in 15 25 35 45 55 65 75 85 {
-    local quantile = `q' / 100
-    rqr log_income western_line_parish, quantile(`quantile') controls($x)
-    eststo Model`q'
-}
-
-* Create custom column labels for the quantiles
-local mtitle "15th" "25th" "35th" "45th" "55th" "65th" "75th" "85th"
-
-* Display the results in columns
-esttab Model15 Model25 Model35 Model45 Model55 Model65 Model75 Model85 using $output_dir/table-20_1.tex, label replace ///
-  keep(western_line_parish) ///
-  stats(r2 N F, fmt(2 %9.0fc 2) labels("R-squared" "Observations" "F-stat")) ///
-  cells(b(star fmt(3)) se(par fmt(2))) mtitle(`mtitle') eqlabels(none) collabels(none) ///
-  title(Residualized Quantile Regression)
+cd "$project_path"
 
 
-* Table 20 pt 2
+*===============================================================================
+* PREPARE AND MERGE INCOME SCORES
+*===============================================================================
 
-global x age age_2 female i.marital i.schooling i.hisclass railway_in_birth_parish
-  
-* Run quantile regressions for each quantile and store the results
-foreach q in 15 25 35 45 55 65 75 85 {
-    local quantile = `q' / 100
-    qreg2 log_income western_line_parish $x, quantile(`quantile')
-    eststo Model`q'
-}
+* --- Step 1: Load and preprocess income score data ---
+* This file contains the national median income for each occupation (HISCO)
+use "data/inc_score_1930_foranalysis.dta", clear
 
-local mtitle "15th" "25th" "35th" "45th" "55th" "65th" "75th" "85th"
+gen female = (sex == 2) // Recode sex to a binary female variable
+rename hisco hisco_code // Rename for consistency
+gen log_inc_score_1930 = log(inc_score_1930 + 1) // Generate log score
 
-* Display the results in columns
-esttab Model15 Model25 Model35 Model45 Model55 Model65 Model75 Model85 using $output_dir/table-20_2.tex, label replace ///
-  keep(western_line_parish) ///
-  stats(r2 N F, fmt(2 %9.0fc 2) labels("R-squared" "Observations" "F-stat")) ///
-  cells(b(star fmt(3)) se(par fmt(2))) mtitle(`mtitle') eqlabels(none) collabels(none) ///
-  title(Conditional Quantile Regression)
+* Drop duplicates to ensure one observation per occupation-gender combination
+duplicates drop hisco_code female, force
 
+* Save the cleaned income score data to a temporary file
+tempfile inc_scores
+save `inc_scores'
+
+
+* --- Step 2: Load main analysis data and merge ---
+use "data/table-5.dta", clear
+
+* Merge income scores onto the main dataset
+merge m:1 hisco_code female using `inc_scores', keep(match) nogen
+
+
+*===============================================================================
+* REGRESSIONS
+*===============================================================================
+
+* Generate squared term for age
+gen age_2 = age^2
+
+* --- Model 1: Unadjusted regression ---
+eststo Model1: reg log_inc_score_1930 western_line_parish, vce(cluster birth_parish_ref_code)
+
+* --- Model 2: Regression with full controls ---
+eststo Model2: reg log_inc_score_1930 western_line_parish age age_2 female i.marital i.schooling i.hisco_code_2_d railway_in_birth_parish, vce(cluster birth_parish_ref_code)
+
+
+*===============================================================================
+* EXPORT TABLE TO LATEX
+*===============================================================================
+
+* Add a local macro to flag the model with controls
+estadd local controls "X", replace: Model2
+
+* Export the final table
+esttab Model1 Model2 using "$output_dir/table-20.tex", label replace ///
+    keep(western_line_parish) ///
+    star(* 0.10 ** 0.05 *** 0.01) ///
+    stats(controls r2 N F, fmt(1 2 %9.0fc 2) labels("Controls" "R-squared" "Observations" "F-stat")) ///
+    cells(b(star fmt(3)) se(par fmt(2))) collabels(none)

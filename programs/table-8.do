@@ -1,65 +1,60 @@
-* Table 8
+/*******************************************************************************
+* Project:      Power for progress: The impact of electricity on individual
+* labor market outcomes
+* Authors:      Jonathan Jayes, Jakob Molinder, and Kerstin Enflo
+*
+*
+* Do-file:      table-8.do
+* Purpose:      Replicates Table 8: Regression for inclusion of parish in the
+* 1930 census sample. This is a balance test to check for
+* sample selection bias based on 1900 parish characteristics.
+*
+*
+* Last-updated: 12 June 2025
+*
+*******************************************************************************/
+
+*===============================================================================
+* SETUP
+*===============================================================================
 
 clear
-cd "$project_path"
-use "data/table-8.dta"
-
 eststo clear
-
-gen income = exp(log_income)
-
-* Clear previous estimates
-eststo clear 
-
-* Electricity job direct
-estpost ttest income if electricity_job_direct == 1, by(western_line_parish)
-eststo Table1
-estadd local category "Electricity job direct"
-
-* Electricity job indirect
-estpost ttest income if electricity_job_indirect == 1, by(western_line_parish)
-eststo Table2
-estadd local category "Electricity job indirect"
-
-* Other jobs (Neither direct nor indirect electricity jobs)
-estpost ttest income if electricity_job_direct == 0 & electricity_job_indirect == 0, by(western_line_parish)
-eststo Table3
-estadd local category "Other jobs"
-
-* All jobs
-estpost ttest income, by(western_line_parish)
-eststo Table4
-estadd local category "Average for all jobs"
+cd "$project_path"
+use "data/table-8.dta", clear
 
 
-esttab Table1 Table2 Table3 Table4 using $output_dir/table-8.tex, ///
-    cells("category mu_1(fmt(4)) mu_2(fmt(4)) b(fmt(4)) p(fmt(4))") ///
-    collabels("Category" "Mean (Group 0)" "Mean (Group 1)" "Difference" "p-value") ///
-    label replace nonumbers compress
+*===============================================================================
+* PREPARATION
+*===============================================================================
+
+* Add descriptive labels to variables for a clean table output.
+* 'shc1' (Elite) is the omitted base category in the regression.
+label var included_1930 "Parish included in 1930 census"
+label var shc2 "White collar (%) 1900"
+label var shc3 "Foremen (%) 1900"
+label var shc4 "Medium skilled (%) 1900"
+label var shc5 "Farmers (%) 1900"
+label var shc6 "Lower skilled (%) 1900"
+label var shc7 "Unskilled (%) 1900"
+label var log_llabforce "Log (1 + Labour Force) 1900"
 
 
+*===============================================================================
+* REGRESSION ANALYSIS
+*===============================================================================
+
+* Regress the 1930 inclusion dummy on 1900 parish characteristics
+eststo Model1: reg included_1930 shc2 shc3 shc4 shc5 shc6 shc7 log_llabforce, robust
 
 
+*===============================================================================
+* EXPORT TABLE TO LATEX
+*===============================================================================
 
-
-
-
-
-tabstat income if electricity_job_direct == 1, by(western_line_parish)
-ttest income if electricity_job_direct == 1, by(western_line_parish)
-
-estpost ttest income if electricity_job_direct == 1, by(western_line_parish)
-
-esttab using $output_dir/table-8.tex, ///
-    cells("mu_1(fmt(4)) mu_2(fmt(4)) b(fmt(4)) p(fmt(4))") ///
-    collabels("Mean (Group 0)" "Mean (Group 1)" "Difference" "p-value") ///
-    label replace
-
-
-
-
-tabstat income if electricity_job_indirect == 1, by(western_line_parish)
-
-tabstat income if electricity_job_direct == 0 & electricity_job_indirect == 0, by(western_line_parish)
-
-tabstat income, by(western_line_parish)
+* Export the regression results to a LaTeX file
+esttab Model1 using "$output_dir/table-8.tex", replace ///
+    label booktabs nonumbers nodepvars ///
+    title("Parish included in 1930 census") ///
+    b(3) se(2) star(* 0.10 ** 0.05 *** 0.01) ///
+    stats(N, fmt(%9.0fc) labels("Observations"))

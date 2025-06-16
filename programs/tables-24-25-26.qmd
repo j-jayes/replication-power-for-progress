@@ -14,10 +14,10 @@ library(here)
 library(gt)
 ```
 
-### Table 16: Share of parishes with union membership data, 1880-1930
+### Table 24, 25, 26: Share of parishes with union membership data, 1880-1930
 
 ```{r}
-df <- read_rds(here::here("data", "table-16.rds"))
+df <- read_rds(here::here("data", "table-24-25-26.rds"))
 
 # Create a set of parishes where the data is complete
 n_non_nan <- df %>%

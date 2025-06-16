@@ -24,16 +24,14 @@ The cleaning script is provided in the `programs/` directory. The main script is
 
 ### Details on each Data Source
 
-| Data.Name                                  | Data.Files                             | Location   | Provided | Citation                              |
-| ------------------------------------------ | -------------------------------------- | ---------- | -------- | ------------------------------------- |
-| "Swedish Census 1930"                      | power-for-progress-1930-census_raw.dta | raw_data/  | FALSE    | Riksarkivet (2022)                    |
-| “Map Data on Electricity Lines”          | figure-3.rds                           | data/      | TRUE     | Hjulström (1940)                     |
-| "Location Data on Power Plants"            | table-2.dta & table-3.dta              | data/      | TRUE     |                                       |
-| "Swedish Censuses 1880-1910"               | table-1.dta                          | data/           | FALSE    | Ruggles, et al (2024)                 |
-| "Occupation coding lookup"                 | hisco_1930.dta                         | codebooks/ | TRUE     |                                       |
-| "Indirect Electricity Jobs Classification" | indirect_electricity_jobs_1930.dta     | codebooks/ | TRUE     |                                       |
-| "Parishes included in 1930 census"         | parishes_1930.dta                      | codebooks/ | TRUE     |                                       |
-| "Union Density by Parish"                  | union_density_1930.dta                 | codebooks/ | FALSE    | Lundkvist, S., & Andrae, C.-G. (1998) |
+| Data.Name                            | Data.Files                                         | Location   | Provided | Citation                                                     |
+| :----------------------------------- | :------------------------------------------------- | :--------- | :------- | :----------------------------------------------------------- |
+| **Swedish Census 1930** | `power-for-progress-1930-census_raw.dta`           | `raw_data/`  | FALSE    | Riksarkivet (2023)                                           |
+| **Geographic Data (Lines, Plants, Parishes)** | `figure-2.rds`                                     | `data/`      | TRUE     | Hjulström (1940); Royal Electrification Committee (1924-26) |
+| **Swedish Censuses 1880-1910** | `table-1.dta`                                      | `data/`      | FALSE    | Ruggles et al. (2024)                                        |
+| **Income Data (Shares & Deciles)** | `figure-1.rds`                                     | `data/`      | TRUE     | Bengtsson et al. (2021a, 2021b); Vattenfall (1948)           |
+| **Occupation Coding & Classifications** | `hisco_1930.dta`, `indirect_electricity_jobs_1930.dta`, `parishes_1930.dta`, `western_line_parishes.dta` | `codebooks/` | TRUE     | van Leeuwen & Maas (2011); Jayes, Molinder, & Enflo (2025)   |
+| **Union Density by Parish** | `union_density_1930.dta`                           | `codebooks/` | FALSE    | Lundkvist, S., & Andrae, C.-G. (1998) |
 
 ### Public use data collected by the authors
 
